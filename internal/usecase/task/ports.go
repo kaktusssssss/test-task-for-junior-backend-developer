@@ -2,6 +2,7 @@ package task
 
 import (
 	"context"
+	"time"
 
 	taskdomain "example.com/taskservice/internal/domain/task"
 )
@@ -26,10 +27,16 @@ type CreateInput struct {
 	Title       string
 	Description string
 	Status      taskdomain.Status
+	RecurrenceType    *taskdomain.RecurrenceType
+    RecurrenceValue   *string
+    RecurrenceEndDate *time.Time
 }
 
 type UpdateInput struct {
 	Title       string
 	Description string
 	Status      taskdomain.Status
+	RecurrenceType    *taskdomain.RecurrenceType
+    RecurrenceValue   *string
+    RecurrenceEndDate *time.Time
 }

@@ -1,20 +1,25 @@
-FROM golang:1.23.0-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
-WORKDIR /src
+# Используем зеркало USTC для загрузки зависимостей Go
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
 
-RUN apk add --no-cache ca-certificates
+WORKDIR /build
 
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /out/taskservice ./cmd/api
 
-FROM alpine:3.21
+RUN go build -o /out/taskservice ./cmd/api
+
+# --- Финальный образ ---
+FROM alpine:3.20
+
+# Используем то же зеркало USTC для установки ca-certificates
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories && \
+    apk add --no-cache ca-certificates
 
 WORKDIR /app
-
-RUN apk add --no-cache ca-certificates
 
 COPY --from=builder /out/taskservice /app/taskservice
 

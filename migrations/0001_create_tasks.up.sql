@@ -8,3 +8,10 @@ CREATE TABLE IF NOT EXISTS tasks (
 );
 
 CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks (status);
+
+ALTER TABLE tasks ADD COLUMN IF NOT EXISTS recurrence_type VARCHAR(20);
+ALTER TABLE tasks ADD COLUMN IF NOT EXISTS recurrence_value VARCHAR(50);
+ALTER TABLE tasks ADD COLUMN IF NOT EXISTS recurrence_end_date TIMESTAMPTZ;
+ALTER TABLE tasks ADD COLUMN IF NOT EXISTS parent_task_id BIGINT;
+
+CREATE INDEX IF NOT EXISTS idx_tasks_parent_task_id ON tasks(parent_task_id);

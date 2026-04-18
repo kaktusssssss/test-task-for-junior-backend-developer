@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 
@@ -27,10 +28,27 @@ func (h *TaskHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var endDate *time.Time
+	if req.RecurrenceEndDate != nil && *req.RecurrenceEndDate != "" {
+		t, err := time.Parse(time.RFC3339, *req.RecurrenceEndDate)
+		if err == nil {
+			endDate = &t
+		}
+	}
+
+	var recurrenceType *taskdomain.RecurrenceType
+    if req.RecurrenceType != nil {
+        rt := taskdomain.RecurrenceType(*req.RecurrenceType)
+        recurrenceType = &rt
+    }
+
 	created, err := h.usecase.Create(r.Context(), taskusecase.CreateInput{
 		Title:       req.Title,
 		Description: req.Description,
 		Status:      req.Status,
+		RecurrenceType:    recurrenceType,
+		RecurrenceValue:   req.RecurrenceValue,
+		RecurrenceEndDate: endDate,
 	})
 	if err != nil {
 		writeUsecaseError(w, err)

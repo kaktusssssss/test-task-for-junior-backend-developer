@@ -10,6 +10,15 @@ const (
 	StatusDone       Status = "done"
 )
 
+type RecurrenceType string  // Переодичность
+
+const (
+    RecurrenceDaily    RecurrenceType = "daily"     // Ежедневно, каждый N-й день
+    RecurrenceMonthly  RecurrenceType = "monthly"   // Ежемесячно
+    RecurrenceSpecific RecurrenceType = "specific"  // Конкретные даты
+    RecurrenceParity   RecurrenceType = "parity"    // Чётные/нечётные дни
+)
+
 type Task struct {
 	ID          int64     `json:"id"`
 	Title       string    `json:"title"`
@@ -17,6 +26,10 @@ type Task struct {
 	Status      Status    `json:"status"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+	RecurrenceType    *RecurrenceType `json:"recurrence_type,omitempty"`
+    RecurrenceValue   *string         `json:"recurrence_value,omitempty"`
+    RecurrenceEndDate *time.Time      `json:"recurrence_end_date,omitempty"`
+    ParentTaskID      *string         `json:"parent_task_id,omitempty"`
 }
 
 func (s Status) Valid() bool {
@@ -27,3 +40,4 @@ func (s Status) Valid() bool {
 		return false
 	}
 }
+
